@@ -4,9 +4,12 @@ require "json"
 module CryAI
 
   class DB
+    getter words
+    getter lines
+
     def initialize(@words_file, @lines_file)
       @words = {} of String => Array
-      @lines = {} of Int32 => {String, Int32}
+      @lines = {} of Int32 => Tuple(Int32, String)
       load_data
     end
 
@@ -17,16 +20,16 @@ module CryAI
 
     def load_data
       if File.exists?  @words_file
-        f = File.read @words_file
-        unless f.is_a?(Nil)
-          @words = JSON.parse f
+        parsed_json = JSON.parse(File.read @words_file)
+        if parsed_json.is_a?(Hash)
+          @words = parsed_json
         end
       end
       puts @words
       if File.exists? @lines_file
-        f = File.read @lines_file
-        unless f.is_a?(Nil)
-          @lines = JSON.parse f
+        parsed_json = JSON.parse(File.read @lines_file)
+        if parsed_json.is_a?(Hash)
+          @lines = parsed_json
         end
       end
       puts @lines
